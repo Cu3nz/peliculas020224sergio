@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ContactoController;
 use App\Http\Controllers\TagController;
 use App\Livewire\PrincipalMovies;
 use Illuminate\Support\Facades\Route;
@@ -35,3 +36,9 @@ Route::middleware([
     Route::get('movies' , PrincipalMovies::class) -> name('movies.index');
 
 });
+
+
+//todo Para el correo: 
+
+Route::get('contacto' , [ContactoController::class , 'pintarFormulario']) -> name('email.pintar');
+Route::post('contacto' , [ContactoController::class , 'procesarFormulario']) -> name('email.procesar');

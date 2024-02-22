@@ -15,6 +15,8 @@
                     <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    @auth
+                        
                     <x-nav-link href="{{ route('categories.index') }}" :active="request()->routeIs('categories/*')">
                         Gestionar Categorias
                     </x-nav-link>
@@ -23,6 +25,10 @@
                     </x-nav-link>
                     <x-nav-link href="{{ route('movies.index') }}" :active="request()->routeIs('movies/*')">
                         Gestionar Movies
+                    </x-nav-link>
+                    @endauth
+                    <x-nav-link href="{{ route('email.pintar') }}" :active="request()->routeIs('email/*')">
+                        Contacto
                     </x-nav-link>
                 </div>
             </div>

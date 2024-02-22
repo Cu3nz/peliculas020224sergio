@@ -40,4 +40,19 @@ class Movie extends Model
         );
     }
 
+
+    public function devolverTag(){
+
+        $tags = [];
+
+        foreach ($this -> tags as $tag) {
+            
+            $tags [] = $tag -> id; 
+
+        }
+
+        return $tags;
+
+    }
+
 }

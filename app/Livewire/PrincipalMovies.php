@@ -2,10 +2,14 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Forms\UpdateMovie;
+use App\Models\Category;
 use App\Models\Movie;
+use App\Models\Tag;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
 class PrincipalMovies extends Component
@@ -13,6 +17,13 @@ class PrincipalMovies extends Component
 
 
     use WithPagination;
+    use WithFileUploads;
+
+    //todo Para el update 
+
+    public UpdateMovie $form;
+
+    public bool $abrirModalUpdate = false;
 
 
     public string $orden = "desc";
@@ -21,15 +32,31 @@ class PrincipalMovies extends Component
 
     public string $estado = "";
 
+    public string $buscar = "";
 
+    //todo Para el info
+
+    public Movie $pelicula;
+
+    public bool $abrirModalInfo = false;
+
+
+    #[On('ejecutar_consulta')]
 
     public function render()
     {
         $movies = Movie::join('categories' , 'categories.id' , '=' , 'category_id')
         ->select('movies.id as idm' , 'titulo'  , 'caratula' , 'disponible' , 'nombre')
+        ->where('nombre' , 'like' , "$this->buscar%")
+        ->orWhere('disponible' , 'like' , "$this->buscar%")
+        ->orWhere('categoria' , 'like' , "$this->buscar%")
+        ->orWhere('titulo' , 'like' , "$this->buscar%")
         ->orderBy($this -> campo , $this -> orden)
         ->paginate(5);
-        return view('livewire.principal-movies' , compact('movies'));
+        //todo Para el update
+        $categorias = Category::orderBy('nombre','asc')->get();
+        $Mistags = Tag::select('id','nombre' , 'color') -> get();
+        return view('livewire.principal-movies' , compact('movies' , 'categorias' , 'Mistags'));
     }
 
     public function ordenar($campo){
@@ -73,6 +100,54 @@ class PrincipalMovies extends Component
 
         $this -> dispatch('mensaje' , 'Producto borrado correctametne');
 
+    }
+
+
+    public function info(Movie $movie){
+
+        
+        $this -> pelicula = $movie;
+
+
+        $this -> abrirModalInfo = true;
+
+
+    }
+
+
+    public function salirModalInfo(){
+        $this -> reset(['pelicula' , 'abrirModalInfo']);
+    }
+
+    public function edit (Movie $movie){
+
+        $this -> form  -> setMovie($movie);
+        
+        $this -> abrirModalUpdate = true;
+
+    }
+
+    public function updatingBuscar(){
+        $this -> resetPage();
+    }
+
+
+    public function update(){
+
+        $this -> form -> editarMovie();
+
+        $this -> salirModalUpdate();
+
+
+        $this -> dispatch('mensaje' , 'movie actu');
+
+
+    }
+
+
+    public function salirModalUpdate(){
+        $this -> form -> limpiarCampos();
+        $this -> abrirModalUpdate = false;
     }
 
 }
